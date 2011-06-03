@@ -1,0 +1,22 @@
+<script type="text/javascript">
+	function countField() {
+		var count = parseInt(document.getElementById("count").innerHTML);
+		if (count > 0) {
+			var countdown = count - 1;
+			document.getElementById("count").innerHTML = countdown;
+		} else {
+			document.getElementById("micropost_content").disabled = true;
+		}
+	}
+</script>
+
+<%= form_for @micropost do |f| %>
+  <%= render 'shared/error_messages', :object => f.object %>
+  <div class="field">
+    <%= f.text_area :content, :onkeyup => "countField()" %>
+	Remaining Chars <label name="count" id="count">140</label>
+  </div>
+  <div class="actions">
+    <%= f.submit "Submit" %>
+  </div>
+<% end %>

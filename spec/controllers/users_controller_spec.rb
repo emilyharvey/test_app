@@ -78,6 +78,36 @@ describe UsersController do
       get :show, :id => @user
       response.should have_selector("h1>img", :class => "gravatar")
     end
+    
+    it "should show the user's microposts" do
+      mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+      mp2 = Factory(:micropost, :user => @user, :content => "Baz quux")
+      get :show, :id => @user
+      response.should_not have_selector("a", :content => "delete")
+    end
+    
+    describe "microposts" do
+      before(:each) do
+        test_sign_in(@user)
+        mp1 = Factory(:micropost, :user => @user, :content => "Foo bar")
+        mp2 = Factory(:micropost, :user => @user, :content => "Baz quux")
+
+        @users = [@user, mp1, mp2]
+        30.times do
+          @users << Factory(:micropost, :user => @user, :content => "Another Micropost")
+        end
+      end
+    
+      it "should paginate microposts" do
+          get :show, :id => @user
+          response.should have_selector("div.pagination")
+          response.should have_selector("span.disabled", :content => "Previous")
+          response.should have_selector("a", :href => "/users/1?page=2",
+                                             :content => "2")
+          response.should have_selector("a", :href => "/users/1?page=2",
+                                             :content => "Next")
+      end
+    end
   end
   
   describe "POST 'create'" do

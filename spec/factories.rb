@@ -6,6 +6,18 @@ Factory.define :user do |user|
   user.password_confirmation "maestro"
 end
 
+Factory.define :sarah do |sarah|
+  sarah.name                  "Emily Harvey"
+  sarah.email                 "emilys2email@email.com"
+  sarah.password              "maestro"
+  sarah.password_confirmation "maestro"
+end
+
 Factory.sequence :email do |n|
   "person-#{n}@example.com"
+end
+
+Factory.define :micropost do |micropost|
+  micropost.content "Foo bar"
+  micropost.association :user
 end
