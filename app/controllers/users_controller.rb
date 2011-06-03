@@ -1,5 +1,5 @@
 class UsersController < ApplicationController  
-  before_filter :authenticate, :only => [:index, :edit, :update]
+  before_filter :authenticate, :only => [:index, :edit, :update, :destroy]
   before_filter :correct_user, :only => [:edit, :update]
   before_filter :admin_user,   :only => :destroy
   
@@ -9,8 +9,14 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
-    @title = "Sign up"
+    user = current_user
+    
+    if user.nil?
+      @user = User.new
+      @title = "Sign up"
+    else
+      redirect_to root_path
+    end 
   end
   
   def create
@@ -52,10 +58,17 @@ class UsersController < ApplicationController
     @title = @user.name
   end
   
-  def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User destroyed."
-    redirect_to users_path
+  def destroy    
+    destroy_user = User.find(params[:id])
+    
+    if (current_user[:email] == destroy_user[:email]) 
+      flash[:success] = "You cannot delete yourself."
+      redirect_to users_path
+    else
+      destroy_user.destroy
+      flash[:success] = "User destroyed."
+      redirect_to users_path
+    end
   end
   
   private
